@@ -1,10 +1,7 @@
 import React, { useMemo } from 'react';
-import { ArchivedDocument } from '../../types';
-import { X } from '../icons/Icons';
-
-// Use a global instance of markdown-it and DOMPurify
-const md = (window as any).markdownit();
-const DOMPurify = (window as any).DOMPurify;
+import { ArchivedDocument } from '../../../types';
+import { X } from '../../icons/Icons';
+import { renderMarkdown } from '../../../utils/markdown';
 
 interface ArchiveViewerModalProps {
   archive: ArchivedDocument;
@@ -13,8 +10,7 @@ interface ArchiveViewerModalProps {
 
 const ArchiveViewerModal: React.FC<ArchiveViewerModalProps> = ({ archive, onClose }) => {
   const renderedHtml = useMemo(() => {
-    const raw = md.render(archive.content);
-    return DOMPurify.sanitize(raw);
+    return renderMarkdown(archive.content);
   }, [archive.content]);
 
   return (

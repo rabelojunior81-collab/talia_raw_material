@@ -4,10 +4,8 @@ import { Session } from '../../types';
 import { generateDocumentFromConversation } from '../../services/geminiService';
 import { X, Loader, AlertTriangle, Copy, FileCode2, Download, Bookmark } from '../icons/Icons';
 import { db } from '../../services/db';
-import { useMediaAssets } from '../../hooks/useMediaAssets';
-
-const md = (window as any).markdownit();
-const DOMPurify = (window as any).DOMPurify;
+import { useMediaAssets } from '../hooks/useMediaAssets';
+import { renderMarkdown } from '../../utils/markdown';
 
 interface GenerationOrchestratorProps {
   isOpen: boolean;
@@ -64,10 +62,9 @@ const ResultView: React.FC<{
     const [assetSuccess, setAssetSuccess] = useState('');
 
     const { addAsset } = useMediaAssets(sessionId);
-    
+
     const renderedHtml = useMemo(() => {
-        const raw = md.render(content);
-        return DOMPurify.sanitize(raw);
+        return renderMarkdown(content);
     }, [content]);
 
     const handleCopy = async () => {

@@ -2,13 +2,7 @@
 import React, { useMemo } from 'react';
 import { User, Paperclip, Link, FileCode2, Search } from '../icons/Icons';
 import { GroundingSource } from '../../types';
-
-const md = (window as any).markdownit({
-  html: true,
-  linkify: true,
-  typographer: true
-});
-const DOMPurify = (window as any).DOMPurify;
+import { renderMarkdown } from '../../utils/markdown';
 
 interface MessageBubbleProps {
   role: 'user' | 'model';
@@ -18,13 +12,9 @@ interface MessageBubbleProps {
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ role, text, mediaAssets, sources }) => {
-  
+
   const sanitizedHtml = useMemo(() => {
-    const rawHtml = md.render(text);
-    return DOMPurify.sanitize(rawHtml, {
-      ADD_TAGS: ['iframe'], 
-      ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target']
-    });
+    return renderMarkdown(text);
   }, [text]);
 
   const renderBlob = (blob: Blob, idx: number) => {

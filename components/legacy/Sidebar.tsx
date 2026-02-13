@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
-import { Session, Mode, ArchivedDocument } from '../types';
-import { PlusCircle, Trash2, Edit3, MessageSquare, Video, LayoutGrid, Bookmark, FileCode2, ChevronRight, Activity, Menu } from './icons/Icons';
-import FormatsPanel from './FormatsPanel';
-import GenerationOrchestrator from './Generation/GenerationOrchestrator';
+import { Session, Mode, ArchivedDocument } from '../../types';
+import { PlusCircle, Trash2, Edit3, MessageSquare, Video, LayoutGrid, Bookmark, FileCode2, ChevronRight, Activity, Menu } from '../icons/Icons';
+import FormatsPanel from '../FormatsPanel';
+import GenerationOrchestrator from '../Generation/GenerationOrchestrator';
 import ArchiveViewerModal from './History/ArchiveViewerModal';
 
 interface SidebarProps {

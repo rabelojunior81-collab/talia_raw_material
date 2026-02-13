@@ -29,9 +29,9 @@ Como implantar (Deploy):
         *   `SUA_CHAVE_DA_YOUTUBE_API`: Pela sua chave de API da YouTube Data API v3. Você pode criar uma no Console do Google Cloud.
 
 3.  **Após o Deploy:**
-    *   O comando gcloud retornará uma `https-trigger-url`. Esta é a URL da sua função.
-    *   Copie essa URL.
-    *   Abra o arquivo `src/services/geminiService.ts` no seu projeto frontend.
-    *   Cole a URL na constante `YOUTUBE_PROXY_URL`, substituindo o placeholder.
+     *   O comando gcloud retornará uma `https-trigger-url`. Esta é a URL da sua função.
+     *   Copie essa URL.
+     *   Abra o arquivo `services/geminiService.ts` no seu projeto frontend.
+     *   Cole a URL na constante `YOUTUBE_PROXY_URL`, substituindo o placeholder.
 
 4.  **Pronto!** Sua aplicação frontend agora será capaz de buscar transcrições reais de vídeos do YouTube.

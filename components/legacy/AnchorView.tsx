@@ -1,16 +1,16 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Session } from '../types';
-import { getChatResponse, generateTitleForSession } from '../services/geminiService';
-import { Send, Loader, FileText, Paperclip, X, Phone, PhoneOff, Camera, Globe } from './icons/Icons';
+import { Session } from '../../types';
+import { getChatResponse, generateTitleForSession } from '../../services/geminiService';
+import { Send, Loader, FileText, Paperclip, X, Phone, PhoneOff, Camera, Globe } from '../icons/Icons';
 import ExportModal from './History/ExportModal';
-import { db } from '../services/db';
-import { useDataStore } from '../hooks/useDataStore';
-import { useMediaAssets } from '../hooks/useMediaAssets'; 
-import MessageBubble from './Chat/MessageBubble';
-import { useGeminiLive } from '../hooks/useGeminiLive';
-import CameraModal from './CameraModal';
+import { db } from '../../services/db';
+import { useDataStore } from '../../hooks/useDataStore';
+import { useMediaAssets } from '../../hooks/useMediaAssets'; 
+import MessageBubble from '../Chat/MessageBubble';
+import { useGeminiLive } from '../../hooks/useGeminiLive';
+import CameraModal from '../CameraModal';
 
 interface AnchorViewProps {
     session: Session;

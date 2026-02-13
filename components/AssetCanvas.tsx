@@ -4,13 +4,7 @@ import { UIAsset } from '../hooks/useMediaAssets';
 import { AtivoMultimidia } from '../types';
 // Added FileCode2 to the destructuring import
 import { X, Download, ChevronLeft, ChevronRight, Image as ImageIcon, Maximize2, Video as VideoIcon, Activity, FileText, Sparkles, Trash2, Edit3, Move, Copy, Check, Clock, Database, Plus, Minus, RotateCcw, FileText as PdfIcon, FileCode2 } from './icons/Icons';
-
-const md = (window as any).markdownit({
-    html: true,
-    linkify: true,
-    typographer: true
-});
-const DOMPurify = (window as any).DOMPurify;
+import { renderMarkdown } from '../utils/markdown';
 
 interface AssetCanvasProps {
   assets: UIAsset[];
@@ -34,7 +28,7 @@ const MarkdownViewer = ({ asset }: { asset: UIAsset }) => {
         load();
     }, [asset]);
 
-    const html = useMemo(() => DOMPurify.sanitize(md.render(content || '')), [content]);
+    const html = useMemo(() => renderMarkdown(content || ''), [content]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(content);

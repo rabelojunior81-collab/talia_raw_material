@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { MediaAsset } from '../types';
-import { Image, X, Download, Link } from './icons/Icons';
+import { MediaAsset } from '../../types';
+import { Image, X, Download, Link } from '../icons/Icons';
 
 interface AssetDeckProps {
   assets: MediaAsset[];

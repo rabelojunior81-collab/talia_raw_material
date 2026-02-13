@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Session, AutonomyMode } from '../types';
+import { AutonomyMode } from '../types';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../services/db';
 import { getChatResponse, generateTitleForSession } from '../services/geminiService';
@@ -11,10 +11,9 @@ import { useMediaAssets } from '../hooks/useMediaAssets';
 import MessageBubble from './Chat/MessageBubble';
 
 interface TaliaCorePanelProps {
-  session: Session;
+  session: any;
   userName: string;
   autonomyMode: AutonomyMode;
-  onUpdateSession: (id: string, data: Partial<Session>) => void;
   onRenameSession: (id: string, title: string) => void;
   onOpenImageStudio: (prompt: string) => void;
 }

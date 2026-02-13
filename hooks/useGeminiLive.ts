@@ -4,6 +4,7 @@ import { GoogleGenAI, LiveServerMessage, Modality } from "@google/genai";
 import { useLiveAudio } from './useLiveAudio';
 import { liveTools, taliaPersona, getApiKey } from '../services/geminiService';
 import { db } from '../services/db';
+import { logger } from '../utils/logger';
 
 const MODEL_NAME = 'gemini-2.5-flash-native-audio-preview-12-2025'; // Modelo Live API Preview (Dezembro 2025)
 
@@ -66,7 +67,7 @@ export const useGeminiLive = (onOpenImageStudio?: (prompt: string) => void) => {
   const connect = useCallback(async (sessionId?: string) => {
     const apiKey = getApiKey();
     if (!apiKey) {
-      console.error('API Key não configurada');
+      logger.error('API Key não configurada');
       setError('API Key não configurada. Configure via onboarding ou .env.local');
       return;
     }
@@ -133,61 +134,61 @@ ${voiceLogContext || "Sem log de voz anterior."}
           },
           systemInstruction: LIVE_SYSTEM_INSTRUCTION_BASE + contextInstruction,
         },
-        callbacks: {
-          onopen: () => {
-            console.log('[Live] === CONNECTION OPENED ===');
-            setIsConnected(true);
-            isConnectedRef.current = true;
-            console.log('[Live] Starting recording...');
-            liveAudio.startRecording((base64Data) => {
-               // Verificar se conexão ainda está aberta
-               if (!isConnectedRef.current) {
-                 console.log('[Live] Connection closed, skipping audio send');
-                 return;
-               }
-               console.log('[Live] Sending audio data, length:', base64Data.length);
-               sessionPromise.then(session => {
-                   console.log('[Live] Calling sendRealtimeInput...');
-                   try {
-                       session.sendRealtimeInput({
-                           media: { mimeType: 'audio/pcm;rate=16000', data: base64Data }
-                       });
-                   } catch (err) {
-                       console.error('[Live] Error sending audio:', err);
-                   }
-               });
-            });
-          },
-          onmessage: async (message: LiveServerMessage) => {
-            // DEBUG: Log completo da mensagem recebida
-            console.log('[Live] === MESSAGE RECEIVED ===');
-            console.log('[Live] Full message:', JSON.stringify(message, null, 2));
-            console.log('[Live] serverContent:', message.serverContent);
-            console.log('[Live] inputTranscription:', message.serverContent?.inputTranscription);
-            console.log('[Live] outputTranscription:', message.serverContent?.outputTranscription);
-            console.log('[Live] modelTurn:', message.serverContent?.modelTurn);
-            console.log('[Live] turnComplete:', message.serverContent?.turnComplete);
-            
-            const audioData = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
-            console.log('[Live] audioData present:', !!audioData);
-            
-            if (audioData) {
-              console.log('[Live] Playing audio chunk...');
-              liveAudio.playAudioChunk(audioData);
-            }
-            if (message.serverContent?.interrupted) {
-              console.log('[Live] Interrupted');
-              liveAudio.stopPlayback();
-            }
+         callbacks: {
+           onopen: () => {
+             logger.info('[Live] === CONNECTION OPENED ===');
+             setIsConnected(true);
+             isConnectedRef.current = true;
+             logger.debug('[Live] Starting recording...');
+             liveAudio.startRecording((base64Data) => {
+                // Verificar se conexão ainda está aberta
+                if (!isConnectedRef.current) {
+                  logger.debug('[Live] Connection closed, skipping audio send');
+                  return;
+                }
+                logger.debug('[Live] Sending audio data, length:', base64Data.length);
+                sessionPromise.then(session => {
+                    logger.debug('[Live] Calling sendRealtimeInput...');
+                    try {
+                        session.sendRealtimeInput({
+                            media: { mimeType: 'audio/pcm;rate=16000', data: base64Data }
+                        });
+                    } catch (err) {
+                        logger.error('[Live] Error sending audio:', err);
+                    }
+                });
+             });
+           },
+           onmessage: async (message: LiveServerMessage) => {
+             // DEBUG: Log completo da mensagem recebida
+             logger.debug('[Live] === MESSAGE RECEIVED ===');
+             logger.debug('[Live] Full message:', JSON.stringify(message, null, 2));
+             logger.debug('[Live] serverContent:', message.serverContent);
+             logger.debug('[Live] inputTranscription:', message.serverContent?.inputTranscription);
+             logger.debug('[Live] outputTranscription:', message.serverContent?.outputTranscription);
+             logger.debug('[Live] modelTurn:', message.serverContent?.modelTurn);
+             logger.debug('[Live] turnComplete:', message.serverContent?.turnComplete);
 
-            if (message.serverContent?.inputTranscription) {
-                console.log('[Live] Input transcription:', message.serverContent.inputTranscription.text);
-                currentInputTranscription.current += message.serverContent.inputTranscription.text;
-            }
-            if (message.serverContent?.outputTranscription) {
-                console.log('[Live] Output transcription:', message.serverContent.outputTranscription.text);
-                currentOutputTranscription.current += message.serverContent.outputTranscription.text;
-            }
+             const audioData = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
+             logger.debug('[Live] audioData present:', !!audioData);
+
+             if (audioData) {
+               logger.debug('[Live] Playing audio chunk...');
+               liveAudio.playAudioChunk(audioData);
+             }
+             if (message.serverContent?.interrupted) {
+               logger.debug('[Live] Interrupted');
+               liveAudio.stopPlayback();
+             }
+
+             if (message.serverContent?.inputTranscription) {
+                 logger.debug('[Live] Input transcription:', message.serverContent.inputTranscription.text);
+                 currentInputTranscription.current += message.serverContent.inputTranscription.text;
+             }
+             if (message.serverContent?.outputTranscription) {
+                 logger.debug('[Live] Output transcription:', message.serverContent.outputTranscription.text);
+                 currentOutputTranscription.current += message.serverContent.outputTranscription.text;
+             }
 
             if (message.serverContent?.turnComplete && sessionId) {
                 if (currentInputTranscription.current) {
@@ -223,33 +224,33 @@ ${voiceLogContext || "Sem log de voz anterior."}
                                 result = { result: "Estúdio de imagem aberto com sucesso na tela do usuário. Aguarde a configuração e aprovação dele." };
                             }
                         }
-                    } catch (e) { result = { error: "Erro na ferramenta." }; }
-                    functionResponses.push({ name: fc.name, id: fc.id, response: result });
-                }
-                // Enviar resposta da ferramenta imediatamente para reduzir latência e evitar <ctrl46>
-                sessionPromise.then(session => session.sendToolResponse({ functionResponses }));
-            }
-          },
-          onclose: () => { 
-            console.log('[Live] === CONNECTION CLOSED ===');
-            setIsConnected(false); 
-            isConnectedRef.current = false;
-            liveAudio.stopRecording(); 
-          },
-          onerror: (error: any) => { 
-            console.error('[Live] === CONNECTION ERROR ===', error);
-            setIsConnected(false); 
-            isConnectedRef.current = false;
-            liveAudio.stopRecording(); 
-          }
+                     } catch (e) { result = { error: "Erro na ferramenta." }; }
+                     functionResponses.push({ name: fc.name, id: fc.id, response: result });
+                 }
+                 // Enviar resposta da ferramenta imediatamente para reduzir latência e evitar <ctrl46>
+                 sessionPromise.then(session => session.sendToolResponse({ functionResponses }));
+             }
+           },
+           onclose: () => {
+             logger.info('[Live] === CONNECTION CLOSED ===');
+             setIsConnected(false);
+             isConnectedRef.current = false;
+             liveAudio.stopRecording();
+           },
+           onerror: (error: any) => {
+             logger.error('[Live] === CONNECTION ERROR ===', error);
+             setIsConnected(false);
+             isConnectedRef.current = false;
+             liveAudio.stopRecording();
+           }
         }
       });
       sessionRef.current = sessionPromise;
     } catch (err: any) { setIsConnected(false); }
   }, [liveAudio, onOpenImageStudio]);
 
-  const disconnect = useCallback(async () => {
-    console.log('[Live] === DISCONNECTING ===');
+   const disconnect = useCallback(async () => {
+    logger.info('[Live] === DISCONNECTING ===');
     isConnectedRef.current = false; // Sinalizar para parar envio de áudio
     if (sessionRef.current) {
         const session = await sessionRef.current;

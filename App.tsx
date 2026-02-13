@@ -18,45 +18,48 @@ import { generateImageWithConfig } from './services/geminiService';
 export default function App() {
   const [showIntro, setShowIntro] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [hasKey, setHasKey] = useState(false);
   const [autonomyMode, setAutonomyMode] = useLocalStorage<AutonomyMode>('talia-autonomy-mode', 'Co-Autor');
   const [userName, setUserName] = useLocalStorage<string>('talia-user-name', '');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useLocalStorage<boolean>('talia-sidebar-collapsed', false);
   const [focusAssetId, setFocusAssetId] = useState<string | null>(null);
   const [studioPrompt, setStudioPrompt] = useState<string | null>(null);
-  
+
   // Background State - Lifted for Reactivity
   const [isBgSelectorOpen, setIsBgSelectorOpen] = useState(false);
   // Default changed to 'glass' as requested
   const [currentBgId, setCurrentBgId] = useLocalStorage<string>('talia_bg_current', 'glass');
   const [customBgs, setCustomBgs] = useLocalStorage<CustomBg[]>('talia_bg_custom', []);
 
-  const { 
-    projects, 
-    activeProjectId, 
-    setActiveProjectId, 
-    createProject, 
-    deleteProject, 
-    renameProject 
+  const {
+    projects,
+    activeProjectId,
+    setActiveProjectId,
+    createProject,
+    deleteProject,
+    renameProject
   } = useProjects();
 
-  const { 
-    sessions, 
-    activeSession, 
-    createSession, 
-    selectSession, 
-    deleteSession, 
-    renameSession,
-    updateSession 
+  const {
+    sessions,
+    activeSession,
+    createSession,
+    selectSession,
+    deleteSession,
+    renameSession
   } = useSessions(activeProjectId);
-  
+
   const { assets, addAsset, deleteAsset, updateAsset, updateAssetLayout } = useMediaAssets(activeSession?.id || null);
-  const { archives, addArchive, deleteArchive, renameArchive } = useArchives();
+  const { archives, deleteArchive } = useArchives();
 
   // Ensure inspection overlayer closes when switching contexts
   useEffect(() => {
     setFocusAssetId(null);
   }, [activeSession?.id, activeProjectId]);
+
+  // Helper function for renaming sessions (used internally in flow)
+  const handleRenameSession = async (id: string, title: string) => {
+    await renameSession(id, title);
+  };
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -65,9 +68,7 @@ export default function App() {
       const localKey = !!localStorage.getItem('talia_api_key');
       const envKey = !!import.meta.env.VITE_GEMINI_API_KEY;
       const keySelected = aiStudioKey || localKey || envKey;
-      
-      setHasKey(keySelected);
-      
+
       const timer = setTimeout(() => {
         setShowIntro(false);
         if (!userName || !keySelected) setShowOnboarding(true);
@@ -79,16 +80,7 @@ export default function App() {
 
   const handleOnboardingComplete = async (name: string) => {
       setUserName(name);
-      // Check for API key in AI Studio, localStorage, or .env
-      const aiStudioKey = await window.aistudio?.hasSelectedApiKey?.() ?? false;
-      const localKey = !!localStorage.getItem('talia_api_key');
-      const envKey = !!import.meta.env.VITE_GEMINI_API_KEY;
-      const hasApiKey = aiStudioKey || localKey || envKey;
-      
-      if (hasApiKey) {
-        setHasKey(true);
-        setShowOnboarding(false);
-      }
+      setShowOnboarding(false);
   };
 
   const handleStudioGenerate = async (config: ImageGenerationConfig) => {
@@ -118,7 +110,7 @@ export default function App() {
   }
 
   if (showOnboarding) {
-      return <OnboardingModal onComplete={handleOnboardingComplete} onKeySelected={() => setHasKey(true)} hasKeyInitial={hasKey} currentName={userName} />;
+      return <OnboardingModal onComplete={handleOnboardingComplete} onKeySelected={() => setShowOnboarding(false)} currentName={userName} />;
   }
 
   return (
@@ -209,12 +201,11 @@ export default function App() {
 
                 <div className="w-[440px] xl:w-[40%] flex-shrink-0 bg-black/20 backdrop-blur-md">
                     {activeSession ? (
-                        <TaliaCoreSidebar 
+                        <TaliaCoreSidebar
                             session={activeSession}
                             userName={userName}
                             autonomyMode={autonomyMode}
-                            onUpdateSession={updateSession}
-                            onRenameSession={renameSession}
+                            onRenameSession={handleRenameSession}
                             onOpenImageStudio={(p) => setStudioPrompt(p)}
                         />
                     ) : (

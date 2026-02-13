@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Session, ReportableTask } from '../../types';
-import { analyzeConversationForReports } from '../../services/geminiService';
-import { X, Loader, AlertTriangle, Download } from '../icons/Icons';
-import { db } from '../../services/db';
+import { Session, ReportableTask } from '../../../types';
+import { analyzeConversationForReports } from '../../../services/geminiService';
+import { X, Loader, AlertTriangle, Download } from '../../icons/Icons';
+import { db } from '../../../services/db';
 
 interface ExportModalProps {
   isOpen: boolean;

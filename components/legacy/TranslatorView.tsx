@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Session } from '../types';
-import { YOUTUBE_PROXY_URL, getYouTubeTranscript, generateTranslation } from '../services/geminiService';
-import { Link, Loader, AlertTriangle, Download } from './icons/Icons';
+import { Session } from '../../types';
+import { YOUTUBE_PROXY_URL, getYouTubeTranscript, generateTranslation } from '../../services/geminiService';
+import { Link, Loader, AlertTriangle, Download } from '../icons/Icons';
 
 const isBackendConfigured = YOUTUBE_PROXY_URL && YOUTUBE_PROXY_URL.startsWith('https://');
 
@@ -143,10 +143,17 @@ const TranslatorView: React.FC<TranslatorViewProps> = ({ session, onUpdateSessio
     }
   };
 
-  return (
-    <div className="p-6 bg-black/20 backdrop-blur-lg border border-white/20 h-full">
-      <h2 className="text-2xl font-semibold text-white mb-1 [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]">Modo Tradutora</h2>
-      <p className="text-gray-400 mb-6 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">Forneça uma URL de um vídeo do YouTube para obter sua transcrição e tradução.</p>
+   return (
+     <div className="p-6 bg-black/20 backdrop-blur-lg border border-white/20 h-full">
+       <div className="mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+         <h3 className="text-sm font-bold text-red-400 uppercase tracking-widest mb-1">Descontinuado</h3>
+         <p className="text-xs text-gray-400">Este modo NÃO esta ativo. Requer backend proxy de YouTube (Cloud Function) não implantado.</p>
+         <a href="../README.md" className="text-xs text-red-400 hover:text-red-300 mt-1 inline-block">
+           Ver documentacao completa
+         </a>
+       </div>
+       <h2 className="text-2xl font-semibold text-white mb-1 [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]">Modo Tradutora</h2>
+       <p className="text-gray-400 mb-6 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">Forneça uma URL de um vídeo do YouTube para obter sua transcrição e tradução.</p>
       
       <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-grow">

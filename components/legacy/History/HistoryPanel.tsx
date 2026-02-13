@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Session, Mode, ArchivedDocument } from '../../types';
-import { PlusCircle, Trash2, Edit3, MessageSquare, Video, LayoutGrid, X, Bookmark, FileCode2 } from '../icons/Icons';
-import FormatsPanel from '../FormatsPanel';
-import GenerationOrchestrator from '../Generation/GenerationOrchestrator';
+import { ArchivedDocument } from '../../../types';
+import { Trash2, Edit3, MessageSquare, Video, LayoutGrid, X, Bookmark, FileCode2, PlusCircle } from '../../icons/Icons';
 import ArchiveViewerModal from './ArchiveViewerModal';
 
 interface HistoryPanelProps {
-  sessions: Session[];
+  sessions: any[];
   activeSessionId: string | null;
   onSelectSession: (id: string) => void;
-  onCreateSession: (mode: Mode) => void;
+  onCreateSession: (mode: string) => void;
   onDeleteSession: (id: string) => void;
   onRenameSession: (id: string, newTitle: string) => void;
   isMobileOpen: boolean;
@@ -19,6 +17,9 @@ interface HistoryPanelProps {
   onDeleteArchive: (id: string) => void;
   onRenameArchive: (id: string, newTitle: string) => void;
 }
+
+type Session = any;
+type Mode = string;
 
 const HistoryPanel: React.FC<HistoryPanelProps> = ({
   sessions,
@@ -34,13 +35,11 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
   onDeleteArchive,
   onRenameArchive,
 }) => {
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [renameValue, setRenameValue] = useState('');
-  const [activeView, setActiveView] = useState<'history' | 'formats' | 'archive'>('history');
-  
-  const [isGenerationModalOpen, setIsGenerationModalOpen] = useState(false);
-  const [currentFormatConfig, setCurrentFormatConfig] = useState(null);
-  const [viewingArchive, setViewingArchive] = useState<ArchivedDocument | null>(null);
+   const [editingId, setEditingId] = useState<string | null>(null);
+   const [renameValue, setRenameValue] = useState('');
+   const [activeView, setActiveView] = useState<'history' | 'archive'>('history');
+
+   const [viewingArchive, setViewingArchive] = useState<ArchivedDocument | null>(null);
 
   const handleRename = (item: Session | ArchivedDocument) => {
     setEditingId(item.id);
@@ -58,7 +57,7 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     }
     setEditingId(null);
   };
-  
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, id: string, type: 'session' | 'archive') => {
     if (e.key === 'Enter') {
       handleRenameSubmit(e, id, type);
@@ -67,11 +66,6 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     }
   };
 
-  const handleGenerateClick = (config: any) => {
-    setCurrentFormatConfig(config);
-    setIsGenerationModalOpen(true);
-  };
-  
   const HistoryView = () => (
     <div className="flex-grow overflow-y-auto -mr-2 pr-2 space-y-2 hide-scrollbar">
       {sessions.map(session => (
@@ -114,22 +108,18 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
     <>
       <div className={`w-full max-w-xs flex-col bg-black/20 backdrop-blur-lg border-r border-white/20 p-4 h-full fixed md:relative inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 flex`}>
         <div className="flex-shrink-0">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]">
+           <div className="flex justify-between items-center mb-4">
+             <h2 className="text-xl font-semibold text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.7)]">
               {activeView === 'history' && 'Histórico'}
-              {activeView === 'formats' && 'Formatos'}
               {activeView === 'archive' && 'Arquivo'}
             </h2>
             {activeView === 'history' && (<button onClick={() => onCreateSession('Âncora')} className="hidden md:block text-gray-300 hover:text-white transition-colors" title="Nova Conversa"><PlusCircle className="w-6 h-6" /></button>)}
             <button onClick={onMobileClose} className="md:hidden text-gray-300 hover:text-white transition-colors" title="Fechar"><X className="w-6 h-6" /></button>
           </div>
 
-          <div className="grid grid-cols-3 p-1 bg-black/40 border border-white/10 mb-4 space-x-1">
+          <div className="grid grid-cols-2 p-1 bg-black/40 border border-white/10 mb-4 space-x-1">
             <button onClick={() => setActiveView('history')} className={`flex-1 flex items-center justify-center gap-2 text-sm py-2 transition-colors ${activeView === 'history' ? 'bg-red-600/50 text-white' : 'hover:bg-white/10 text-gray-300'}`}>
               <MessageSquare className="w-4 h-4"/><span>Histórico</span>
-            </button>
-            <button onClick={() => setActiveView('formats')} className={`flex-1 flex items-center justify-center gap-2 text-sm py-2 transition-colors ${activeView === 'formats' ? 'bg-red-600/50 text-white' : 'hover:bg-white/10 text-gray-300'}`}>
-              <LayoutGrid className="w-4 h-4"/><span>Formatos</span>
             </button>
             <button onClick={() => setActiveView('archive')} className={`flex-1 flex items-center justify-center gap-2 text-sm py-2 transition-colors ${activeView === 'archive' ? 'bg-red-600/50 text-white' : 'hover:bg-white/10 text-gray-300'}`}>
               <Bookmark className="w-4 h-4"/><span>Arquivo</span>
@@ -139,20 +129,12 @@ const HistoryPanel: React.FC<HistoryPanelProps> = ({
 
         <div className="flex-grow flex flex-col overflow-hidden">
           {activeView === 'history' && <HistoryView />}
-          {activeView === 'formats' && <FormatsPanel onGenerate={handleGenerateClick} />}
           {activeView === 'archive' && <ArchiveView />}
         </div>
       </div>
-      
-      <GenerationOrchestrator 
-        isOpen={isGenerationModalOpen}
-        onClose={() => setIsGenerationModalOpen(false)}
-        sessions={sessions}
-        formatConfig={currentFormatConfig}
-        onAddArchive={onAddArchive}
-      />
+
       {viewingArchive && (
-        <ArchiveViewerModal 
+        <ArchiveViewerModal
           archive={viewingArchive}
           onClose={() => setViewingArchive(null)}
         />

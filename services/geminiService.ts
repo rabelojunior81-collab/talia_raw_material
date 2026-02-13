@@ -1,6 +1,7 @@
 
 import { GoogleGenAI, Part, Content, Tool, Type, FunctionDeclaration } from "@google/genai";
 import { ChatMessage, GroundingSource, MediaAsset, ImageGenerationConfig } from '../types';
+import { logger } from '../utils/logger';
 
 // Helper para obter API key: prioriza .env, mas usa localStorage como fallback
 export const getApiKey = (): string | null => {
@@ -24,6 +25,17 @@ interface GenerateImageArgs {
     prompt_em_ingles: string;
 }
 
+/**
+ * YOUTUBE_PROXY_URL - Tradutora/Transcritor YouTube
+ *
+ * STATUS: Descontinuado
+ * REQUISITOS PARA REATIVAR:
+ * 1. Implementar backend YouTube Proxy em Google Cloud Functions
+ * 2. Instalar dependencia 'youtube-captions-scraper'
+ * 3. Configurar variavel de ambiente ou constant aqui
+ *
+ * NAO esta implementado atualmente. Mantido para referencia futura.
+ */
 export const YOUTUBE_PROXY_URL: string = '';
 
 export const taliaPersona = `
@@ -135,7 +147,7 @@ async function prepareAssetParts(assets: MediaAsset[]): Promise<Part[]> {
                 }
             }
         } catch (e) {
-            console.warn(`Erro no ativo ${asset.fileName}:`, e);
+            logger.warn(`Erro no ativo ${asset.fileName}:`, e);
         }
     }
     return parts;
@@ -276,7 +288,7 @@ export const getChatResponse = async (
         openImageStudio
     };
   } catch (error: any) {
-    console.error("Gemini Error:", error);
+    logger.error("Gemini Error:", error);
     if (error.message?.includes("400")) {
         return { text: "Erro de comunicação: O contexto da conversa pode estar muito complexo ou conter dados inválidos. Tente limpar o histórico ou simplificar o pedido." };
     }
@@ -288,7 +300,7 @@ export const generateImageWithConfig = async (config: ImageGenerationConfig): Pr
     console.log('[ImageGen] Starting generation with config:', config);
     const apiKey = getApiKey();
     if (!apiKey) {
-        console.error('[ImageGen] API Key não configurada');
+        logger.error('[ImageGen] API Key não configurada');
         throw new Error('API Key não configurada');
     }
     console.log('[ImageGen] API Key OK');
@@ -317,7 +329,7 @@ export const generateImageWithConfig = async (config: ImageGenerationConfig): Pr
         console.log('[ImageGen] Candidates:', candidates);
         
         if (!candidates || candidates.length === 0) {
-            console.error('[ImageGen] No candidates in response');
+            logger.error('[ImageGen] No candidates in response');
             return null;
         }
         
@@ -325,7 +337,7 @@ export const generateImageWithConfig = async (config: ImageGenerationConfig): Pr
         console.log('[ImageGen] Content:', content);
         
         if (!content || !content.parts) {
-            console.error('[ImageGen] No content or parts in response');
+            logger.error('[ImageGen] No content or parts in response');
             return null;
         }
         
@@ -346,10 +358,10 @@ export const generateImageWithConfig = async (config: ImageGenerationConfig): Pr
             }
         }
         
-        console.error('[ImageGen] No inlineData found in response parts');
+        logger.error('[ImageGen] No inlineData found in response parts');
         return null;
     } catch (error) {
-        console.error('[ImageGen] Error during generation:', error);
+        logger.error('[ImageGen] Error during generation:', error);
         throw error;
     }
 };

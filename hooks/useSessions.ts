@@ -2,7 +2,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect } from 'react';
 import { db } from '../services/db';
-import { useDataStore } from './useDataStore';
 import { Session, Mode } from '../types';
 import useLocalStorage from './useLocalStorage';
 

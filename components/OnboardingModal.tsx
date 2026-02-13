@@ -1,11 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { Send, Link as LinkIcon, Database, Code, Key } from './icons/Icons';
+import { Link as LinkIcon, Database, Code, Key } from './icons/Icons';
 
 interface OnboardingModalProps {
   onComplete: (name: string) => void;
   onKeySelected: () => void;
-  hasKeyInitial: boolean;
   currentName: string;
 }
 
@@ -14,7 +13,7 @@ const isAIStudio = () => {
   return typeof window !== 'undefined' && !!(window as Window & { aistudio?: { openSelectKey?: () => Promise<void> } }).aistudio?.openSelectKey;
 };
 
-const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, onKeySelected, hasKeyInitial, currentName }) => {
+const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete, onKeySelected, currentName }) => {
   const [name, setName] = useState(currentName);
   const [step, setStep] = useState(currentName ? 1 : 0);
   const [apiKey, setApiKey] = useState('');
