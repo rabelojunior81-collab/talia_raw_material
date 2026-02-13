@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+*.log
+.env
+.env.local
+.env.*.local
+coverage
+public/audio-processor.js
+youtube-proxy-backend
+.git
+*.lock
+*.min.js
+*.min.css

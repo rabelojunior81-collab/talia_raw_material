@@ -1,0 +1,13 @@
+{
+  "name": "talia-youtube-proxy",
+  "version": "1.0.0",
+  "description": "Cloud Function to fetch YouTube video transcripts.",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "youtube-captions-scraper": "^2.0.2"
+  },
+  "engines": {
+    "node": "18"
+  }
+}

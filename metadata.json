@@ -1,0 +1,9 @@
+{
+  "name": "talia-ai",
+  "description": "An advanced AI interface for 'talia.ai', a specialized linguistic assistant. Scalable architecture for team collaboration with real-time audio/visual capabilities.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera",
+    "geolocation"
+  ]
+}

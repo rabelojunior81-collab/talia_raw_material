@@ -1,0 +1,37 @@
+O que é isto?
+Este diretório contém o código para um backend Node.js projetado para ser implantado como uma Google Cloud Function.
+
+Por que é necessário?
+A aplicação frontend (executada no navegador) não pode acessar diretamente a API do YouTube para buscar transcrições de vídeo devido às políticas de segurança da web (CORS). Este backend atua como um proxy seguro:
+1. Recebe um ID de vídeo da aplicação frontend.
+2. Usa a biblioteca 'youtube-captions-scraper' para buscar as legendas/transcrições disponíveis para esse vídeo.
+3. Retorna a transcrição para o frontend.
+
+Como implantar (Deploy):
+1.  **Pré-requisitos:**
+    *   Você precisa de uma conta do Google Cloud com um projeto ativo e faturamento habilitado.
+    *   Tenha o `gcloud CLI` instalado e autenticado (`gcloud auth login`, `gcloud config set project SEU_ID_DO_PROJETO`).
+
+2.  **Passos para o Deploy via gcloud CLI:**
+    *   Navegue até o diretório `youtube-proxy-backend` no seu terminal.
+    *   Execute o seguinte comando para implantar a função:
+
+    gcloud functions deploy getYouTubeTranscript \
+      --runtime nodejs18 \
+      --trigger-http \
+      --entry-point getYouTubeTranscript \
+      --allow-unauthenticated \
+      --region sua-regiao \
+      --set-env-vars="YOUTUBE_API_KEY=SUA_CHAVE_DA_YOUTUBE_API"
+
+    *   **Substitua:**
+        *   `sua-regiao`: Pela região do Google Cloud que você prefere (ex: `us-central1`).
+        *   `SUA_CHAVE_DA_YOUTUBE_API`: Pela sua chave de API da YouTube Data API v3. Você pode criar uma no Console do Google Cloud.
+
+3.  **Após o Deploy:**
+    *   O comando gcloud retornará uma `https-trigger-url`. Esta é a URL da sua função.
+    *   Copie essa URL.
+    *   Abra o arquivo `src/services/geminiService.ts` no seu projeto frontend.
+    *   Cole a URL na constante `YOUTUBE_PROXY_URL`, substituindo o placeholder.
+
+4.  **Pronto!** Sua aplicação frontend agora será capaz de buscar transcrições reais de vídeos do YouTube.
