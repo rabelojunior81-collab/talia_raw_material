@@ -6,6 +6,7 @@
  */
 
 import DOMPurify from 'isomorphic-dompurify';
+import MarkdownIt from 'markdown-it';
 
 // Re-export DOMPurify for direct use if needed
 export { DOMPurify };
@@ -19,17 +20,15 @@ export const MARKDOWN_CONFIG = {
   typographer: true,
 } as const;
 
+// Create a singleton instance of markdown-it
+const markdownitInstance = new MarkdownIt(MARKDOWN_CONFIG);
+
 /**
  * Creates a configured markdown-it instance
  * @returns Configured markdown-it instance
  */
 export const createMarkdownIt = () => {
-  const markdownit = (window as any).markdownit;
-  if (!markdownit) {
-    throw new Error('markdownit not available on window object');
-  }
-
-  return markdownit(MARKDOWN_CONFIG);
+  return markdownitInstance;
 };
 
 /**

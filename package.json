@@ -23,6 +23,7 @@
     "dexie": "^4.2.1",
     "dexie-react-hooks": "^4.2.0",
     "isomorphic-dompurify": "^3.0.0-rc.2",
+    "markdown-it": "^14.1.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
