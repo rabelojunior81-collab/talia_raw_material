@@ -265,3 +265,38 @@ Este é material de referência/exemplo.
 ---
 
 *Versão RAW - Material Bruto*
+
+---
+
+## 📚 DOCUMENTAÇÃO ESPECÍFICA
+
+### Para Retomar Desenvolvimento
+
+1. **🟢 PROJECT_STATUS.md**
+   - Estado geral do projeto
+   - Contexto e arquitetura
+   - Principais conquistas
+   - Próximos passos recomendados
+   - Guia para atualizações
+
+2. **🔄 MIGRATION_GUIDE.md**
+   - Guia de migração de legado para ativo
+   - Como mover componentes do legacy/ para core/
+   - Checklist de validação
+   - Exemplos práticos
+
+3. **🏛️ LEGACY.md**
+   - Referência rápida de componentes legado
+   - Status de cada componente
+   - Dependências e requerimentos
+
+4. **🗂️ components/legacy/README.md**
+   - Documentação detalhada de cada componente legado
+   - Status atual
+   - Motivos de descontinuação
+   - Recomendações
+
+---
+
+**Nota:** Antes de fazer qualquer mudança, verifique estas documentações para não quebrar o fluxo existente.
+
